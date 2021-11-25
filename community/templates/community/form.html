@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+  <br>
+  <h1 class="text-center">{{ site_name }}</h1>
+  <form action="" method="POST">
+    {% csrf_token %}
+    
+    {% bootstrap_form review_form %}
+    <br>
+    <button style="float:right;"type="submit" class="btn btn-primary">{{ site_name }}</button>
+    <br><br>
+  </form>
+  <hr>
+  <a href="{% url 'community:index' %}"><button class="btn btn-secondary">뒤로 가기</button></a>
+{% endblock %}

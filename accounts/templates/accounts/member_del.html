@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h1>회원 탈퇴</h1>
+<hr>
+{% if request.user.is_authenticated and request.user != person %}
+  <script type="text/javascript">
+    alert("당신은 접근자격이 없습니다.");
+    window.location.href = "{% url 'movies:index'%}";
+  </script>
+{% else %}
+{% endif %}
+
+<p>정말로 회원을 탈퇴 하시겠습니까? 탈퇴하시겠다면 비밀번호를 입력해주세요.</p>
+<form action="{% url 'accounts:member_del' user %}" method="POST">
+  {% csrf_token %}
+  비밀번호 확인 : <input type="password" name="pw_del">
+  <input type="submit" value="회원탈퇴">
+</form>
+{% endblock  %}

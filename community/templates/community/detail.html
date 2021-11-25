@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+  <br>
+  <h2 class="text-center">깐부 이야기</h2>
+  <h2>{{ review.title }}</h2>
+  <p style="float:right;">{{ review.pk }} 번째 글, 수정 시각: {{ review.updated_at }}</p>
+  <br>
+  <hr>
+
+  <p style="font-size: 25px;">영화 제목: {{ review.movie_title }}</p>
+  <p>평점: {{ review.rank }}</p>
+
+  <p style="font-size: 20px;">{{ review.content }}</p>
+  
+  
+  <hr>
+  <h4>댓글 목록</h4>
+  {% if comments|length %}
+    <p><b>{{ comments|length }}개의 댓글이 있습니다.</b></p>
+  {% endif %}
+  {% for comment in comments %}
+    <div style="font-size: 25px;">
+    <img src={% if comment.user.profile.image %}"{{ comment.user.profile.image.url }}"{% else %}"https://i.stack.imgur.com/34AD2.jpg"{% endif %}
+            width="60px" style="border-radius: 50%;" alt=""> 
+    {{ comment.user }} : {{ comment.content }}
+    <hr>
+    </div>
+  {% empty %}
+    <p><b>댓글이 없습니다.</b></p>
+  {% endfor %}
+  <hr>
+  {% if request.user.is_authenticated %}
+    <form action="{% url 'community:create_comment' review.pk %}" method="POST">
+      {% csrf_token %}
+      {% bootstrap_form comment_form %}
+    
+      <button style="float:right;" type="submit" class="btn btn-primary">댓글 작성</button>
+      <br>
+     
+    </form>
+  <br>
+  {% else %}
+    <a href="{% url 'accounts:login' %}">[댓글을 작성하려면 로그인하세요.]</a>
+  {% endif %}
+  
+  <div style="float:right">
+    <a href="{% url 'community:index' %}"><button class="btn btn-secondary">뒤로 가기</button></a>  
+    {% if request.user == review.user %}
+      <a href="{% url 'community:update' review.pk %}"><button class="btn btn-secondary">글 수정하기</button></a>
+      </div>
+      <br>
+      <div style="float:letf;">
+      <form action="{% url 'community:delete' review.pk %}" method="POST">
+        {% csrf_token %}
+        <button class="btn btn-danger">글 삭제</button>
+      </form>
+      </div>
+    {% endif %}
+  
+  
+{% endblock  %}

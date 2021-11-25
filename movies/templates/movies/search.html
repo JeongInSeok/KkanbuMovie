@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>검색내용</h1>
+  <h1>{{num}}개의 검색 결과가 있습니다.</h1>
+  {% for movie in movies %}
+  <div class="card mb-3" style="max-width: 540px;" onclick="location.href='/movies/{{movie.id}}'">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="img-fluid rounded-start" alt="포스터 정보가 없습니다">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body" style="color: black;">
+          <h5 class="card-title">제목: {{movie.title}}</h5>
+          <p class="card-text">개봉일: {{movie.release_date}}</p>
+          <p class="card-text">평점: {{movie.vote_average}}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+{% endblock content %}

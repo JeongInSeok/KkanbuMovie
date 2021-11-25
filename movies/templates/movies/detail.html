@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>영화정보</h1>
+  <p>제목 : {{ movie.title }}</p>
+  {% if video %}
+    <iframe src="{{video}}" frameborder="0" width="800px;" height="500px;">영상이 없습니다</iframe>
+  {% else %}
+    <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" style="height: 18rem;" alt="포스터 정보 없음">
+  {% endif %}
+  <p>
+    장르 : 
+      {% for genre in movie.genres %}
+        {{ genre.name }},
+      {% endfor %}
+  </p>
+  <p>개봉일 : {{ movie.release_date }}</p>
+  <p>내용 : {{ movie.overview }}</p>
+  <p>평점 : {{ movie.vote_average }}</p>
+  <p>관객 수 : {{ movie.popularity }}</p>
+{% endblock content %}

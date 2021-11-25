@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>추천영화</h1>
+  <div class="row">
+  {% for movie in movies %}
+    <div class="col-4 card-deck" style="color:black;">
+      <div class="card" style="width: 15rem;">
+        <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" class="card-img-top"  style="height: 18rem;" alt="img">
+        <div class="card-body">
+          <h5 class="card-title" style="height: 3rem;">{{ movie.title }}</h5>
+          <a href="{% url 'movies:detail' movie.id %}" class="btn btn-primary">상세보기</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+{% endblock content %}

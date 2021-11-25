@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+<br>
+<h1>로그인</h1>
+<hr>
+<form action="" method="POST">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  <button type="submit" class="btn btn-primary">로그인하기</button>
+</form>
+<br>
+
+{% load static %}
+<a href="{% url 'accounts:signup' %}" style="text-decoration: none;"><button style="background-color: white; padding-left:0px; padding-right:8px;"><img src="{% static 'images/joinicon.jpg' %}" alt="joinbtn"> 회원가입 </button></a>
+
+{% endblock  %}

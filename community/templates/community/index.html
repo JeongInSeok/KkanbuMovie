@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>깐부 갤러리</h1>
+  <hr>
+  <table class="table table-hover">
+    <thead>
+      <tr class="table-dark">
+        <th scope="col">글 번호</th>
+        <th scope="col">영화 제목</th>
+        <th scope="col">글 제목</th>
+        <th scope="col">작성자</th>
+        <th scope="col">작성 시간</th>
+        <th scope="col">추천 개수</th>
+      </tr>
+    </thead>
+    <tbody style="background-color:white; color:black;">
+      {% for review in page_obj %}
+        <tr>
+          <td onclick="location.href='/community/{{review.pk}}'">{{ review.pk }}</td>
+          <th scope="row" onclick="location.href='/community/{{review.pk}}'">{{ review.movie_title }}</th>
+          <td onclick="location.href='/community/{{review.pk}}'">{{ review.title }}</td>
+          <td onclick="location.href='/community/{{review.pk}}'"><a href="{% url 'accounts:profile' review.user.username %}">{{ review.user }}</a></td>
+          <td onclick="location.href='/community/{{review.pk}}'">{{review.created_at}}</td>
+          <td>
+            <form action="{% url 'community:like' review.pk %}" method="POST" class="likeForm d-inline" data-pk="{{ review.pk }}">
+              {% csrf_token %}
+              {% if user in review.like_users.all %}
+                <button class="btn-{{ review.pk }}">추천 취소</button>
+              {% else %}
+                <button class="btn-{{ review.pk }}">추천</button>
+              {% endif %}
+            </form>
+            <span class="cntLike-{{ review.pk }}">{{ review.like_users.all|length }}</span> 명
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+  </div>
+{% endblock %}
+
+{% block script %}
+  <script>
+    const forms = document.querySelectorAll('.likeForm')
+    forms.forEach((form) => {
+      form.addEventListener('submit', (event) => {
+        event.preventDefault()
+        
+        const pk = form.dataset.pk
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+        axios({
+          method: 'POST',
+          url: form.action,
+          headers: {
+            'X-CSRFToken': csrftoken
+          },
+        })
+        .then((res) => {
+          const btn = document.querySelector(`.btn-${pk}`)
+          const cntLike = document.querySelector(`.cntLike-${pk}`)
+          if (res.data.is_like) {
+            btn.innerText = '추천 취소'
+          } else {
+            btn.innerText = '추천'
+          }
+
+          cntLike.innerText = res.data.cnt_like
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+      })
+
+    })
+  </script>
+{% endblock script %}

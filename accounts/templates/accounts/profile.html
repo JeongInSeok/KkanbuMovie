@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+  <h1>{{ person.username }}의 프로필 페이지</h1>
+  <hr>
+  <div class="row">
+    <div class="col-4">
+        <img src={% if person.profile.image %}"{{ person.profile.image.url }}"{% else %}"https://i.stack.imgur.com/34AD2.jpg"{% endif %}
+            width="150rem" style="border-radius: 50%;" alt="">
+    </div>
+    <div class="col-8">
+        <h2>{{ person.username }} 
+          {% if person == request.user %}
+           
+          {% else %}
+          <div>
+            <form id="followForm" action="{% url 'accounts:follow' person.pk %}" method="POST">
+              {% csrf_token %}
+              {% if request.user in followers %}
+                <button id="followBtn" class="btn btn-outline-info">언팔로우</button>
+              {% else %}
+                <button id="followBtn" class="btn btn-info">팔로우</button>
+              {% endif %}
+            </form>
+          </div>
+          {% endif %}
+        </h2>
+     
+     
+        <p>닉네임 : {{ person.profile.nickname }}</p>
+        <p>자기소개</p>
+        <p>{{ person.profile.description }}</p>
+    </div>
+  </div>
+
+  {% with followings=person.followings.all followers=person.followers.all %}
+    <div>
+      <div>
+        팔로잉 : <span id="follwings">{{ followings|length }}</span> / 팔로워 : <span id="followers">{{ followers|length }}</span>
+      </div>
+      
+    </div>
+  {% endwith %}
+  <hr>
+  {% if request.user.is_authenticated and request.user == person %}
+  <div>
+  <a href="{% url 'accounts:member_del' user %}"><button class="btn btn-danger">회원 탈퇴</button></a>
+  <a href="{% url 'accounts:profupdate' user %}"><button class="btn btn-success">회원 정보 수정</button></a>
+  <a href="{% url 'accounts:chg_pw' %}"><button class="btn btn-success">비밀번호 수정</button></a>
+  </div>
+  {% else %}
+  {% endif %}
+{% endblock %}
+{% block script %}
+  <script>
+    const form = document.querySelector('#followForm')
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault()
+      axios({
+        method: 'POST',
+        url: form.action,
+        headers: {
+          'X-CSRFToken': csrftoken,
+        },
+      })
+      .then((res) => {
+        const btn = form.querySelector('#followBtn')
+        if (res.data.is_follow) {
+          btn.innerText = '언팔로우'
+        } else {
+          btn.innerText = '팔로우'
+        }
+
+        const followers = document.querySelector('#followers')
+        const followings = document.querySelector('#followings')
+
+        followers.innerText = res.data.cnt_follower
+        followings.innerText = res.data.cnt_following
+        
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    })
+  </script>
+{% endblock script %}
